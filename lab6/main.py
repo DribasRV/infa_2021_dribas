@@ -24,6 +24,8 @@ targets = [[0, 0, 0, 0, 0, 0]]
 
 
 score = 0
+filein = open('bestplayers.txt', 'r')
+fileout = open('bestplayers.txt', 'w')
 
 
 def new_ball(i):
@@ -86,10 +88,35 @@ def click(event):
     for i in range(len(targets)):
         if ((event.pos[0] - targets[i][0]) ** 2 <= targets[i][2] ** 2) or ((event.pos[1] - targets[i][1]) ** 2 <= targets[i][2] ** 2):
             score += 5
+            if score > 99:
+                score = 99
             new_target(i)
         elif ((event.pos[0] - targets[i][0]) ** 2 <= (targets[i][2] * 5) ** 2) or ((event.pos[1] - targets[i][1]) ** 2 <= (targets[i][2] * 5) ** 2):
             turn_target(i)
 
+
+def end_game():
+    global filein
+    global fileout
+    file = filein.readlines()
+    symbols = file[0].split()
+    if score >= 10:
+        record = str(score) + ' ' + name
+    else:
+        record = str(score) + '  ' + name
+    #max = 0
+    if score > int(symbols[0]):
+        file.insert(0, record)
+    #else:
+    #    for i in range(len(file)):
+    #        symbols = file[i].split()
+    #        if int(symbols[0]) > max:
+    #            max = int(symbols[0])
+    #    file.insert(0, record)
+
+
+print('Enter your name:')
+name = input()
 
 pygame.display.update()
 clock = pygame.time.Clock()
@@ -104,8 +131,8 @@ finished = False
 while not finished:
     clock.tick(FPS)
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            print('Score:', score)
+        if event.type == pygame.QUIT or score == 99:
+            #end_game()
             finished = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
             click(event)
