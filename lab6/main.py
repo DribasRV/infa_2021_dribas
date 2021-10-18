@@ -23,10 +23,13 @@ targets = [[0, 0, 0, 0, 0, 0]]
 
 
 score = 0
-filein = open('bestplayers.txt', 'r')
 
 
 def new_ball(i):
+    """
+    Changes ball parameters in balls[]
+    :param i: place in list
+    """
     balls[i][0] = randint(100, 700)
     balls[i][1] = randint(100, 500)
     balls[i][2] = randint(30, 50)
@@ -36,10 +39,18 @@ def new_ball(i):
 
 
 def draw_ball(i):
+    """
+    Draws ball with parameters from balls[i]
+    :param i: place in list
+    """
     circle(screen, balls[i][5], (balls[i][0], balls[i][1]), balls[i][2])
 
 
 def move_ball(i):
+    """
+    Changes ball cords in balls[i]
+    :param i: place in list
+    """
     r = balls[i][2]
     balls[i][0] += balls[i][3]
     balls[i][1] += balls[i][4]
@@ -50,6 +61,10 @@ def move_ball(i):
 
 
 def new_target(i):
+    """
+    Changes target parameters in targets[]
+    :param i: place in list
+    """
     targets[i][0] = randint(100, 700)
     targets[i][1] = randint(100, 500)
     targets[i][2] = randint(10, 20)
@@ -59,10 +74,18 @@ def new_target(i):
 
 
 def draw_target(i):
+    """
+    Draws target with parameters from targets[i]
+    :param i: place in list
+    """
     rect(screen, targets[i][5], (targets[i][0], targets[i][1], targets[i][2], targets[i][2]))
 
 
 def move_target(i):
+    """
+    Changes target cords in targets[i]
+    :param i: place in list
+    """
     r = targets[i][2]
     targets[i][0] += targets[i][3]
     targets[i][1] += targets[i][4]
@@ -73,11 +96,19 @@ def move_target(i):
 
 
 def turn_target(i):
+    """
+    Reverses speed of target from targets[i]
+    :param i: place in list
+    """
     targets[i][3] *= -1
     targets[i][4] *= -1
 
 
 def click(event):
+    """
+    Handles the event
+    :param event: handled event
+    """
     global score
     for i in range(len(balls)):
         if (event.pos[0] - balls[i][0]) ** 2 + (event.pos[1] - balls[i][1]) ** 2 <= balls[i][2] ** 2:
@@ -94,7 +125,10 @@ def click(event):
 
 
 def end_game():
-    global filein
+    """
+    Adds record into bestplayers.txt
+    """
+    filein = open('bestplayers.txt', 'r')
     file = filein.readlines()
     print(file)
     if score >= 10:
