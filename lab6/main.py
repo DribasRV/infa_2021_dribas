@@ -115,12 +115,10 @@ def click(event):
             score += 1
             new_ball(i)
     for i in range(len(targets)):
-        if ((event.pos[0] - targets[i][0]) ** 2 <= targets[i][2] ** 2) or ((event.pos[1] - targets[i][1]) ** 2 <= targets[i][2] ** 2):
+        if ((event.pos[0] - targets[i][0]) ** 2 <= targets[i][2] ** 2) and ((event.pos[1] - targets[i][1]) ** 2 <= targets[i][2] ** 2):
             score += 5
-            if score > 99:
-                score = 99
             new_target(i)
-        elif ((event.pos[0] - targets[i][0]) ** 2 <= (targets[i][2] * 3) ** 2) or ((event.pos[1] - targets[i][1]) ** 2 <= (targets[i][2] * 3) ** 2):
+        elif ((event.pos[0] - targets[i][0]) ** 2 <= (targets[i][2] * 3) ** 2) and ((event.pos[1] - targets[i][1]) ** 2 <= (targets[i][2] * 3) ** 2):
             turn_target(i)
 
 
@@ -130,10 +128,7 @@ def end_game():
     """
     filein = open('bestplayers.txt', 'r')
     file = filein.readlines()
-    if score >= 10:
-        record = str(score) + ' ' + name
-    else:
-        record = ' ' + str(score) + ' ' + name
+    record = str(score) + ' ' + name
     max = 0
     max_i = len(file)
     name_used = False
