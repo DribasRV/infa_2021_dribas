@@ -130,7 +130,6 @@ def end_game():
     """
     filein = open('bestplayers.txt', 'r')
     file = filein.readlines()
-    print(file)
     if score >= 10:
         record = str(score) + ' ' + name
     else:
@@ -152,10 +151,27 @@ def end_game():
         fileout.write(file[i])
 
 
+def text_to_screen(screen, text, x, y, size = 50, color = (200, 000, 000)):
+    """
+    Displays score on screen
+    :param screen:
+    :param text:
+    :param x:
+    :param y:
+    :param size:
+    :param color:
+    """
+    text = str(text)
+    font = pygame.font.SysFont('Comic Sans MS', size)
+    text = font.render(text, True, color)
+    screen.blit(text, (x, y))
+
+
 print('Enter your name:')
 name = input()
 
 screen = pygame.display.set_mode((screen_width, screen_heigh))
+myfont = pygame.font.SysFont('Comic Sans MS', 30)
 
 pygame.display.update()
 clock = pygame.time.Clock()
@@ -165,6 +181,7 @@ for i in range(len(balls)):
 for i in range(len(targets)):
     new_target(i)
     draw_target(i)
+text_to_screen(screen, 'Score:' + str(score), 0, 0)
 finished = False
 
 while not finished:
@@ -181,6 +198,7 @@ while not finished:
     for i in range(len(targets)):
         draw_target(i)
         move_target(i)
+    text_to_screen(screen, 'Score:' + str(score), 0, 0)
     pygame.display.update()
     screen.fill(BLACK)
 
