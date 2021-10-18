@@ -4,10 +4,9 @@ from random import randint
 
 pygame.init()
 
-FPS = 2
+FPS = 50
 screen_width = 1200
 screen_heigh = 900
-screen = pygame.display.set_mode((screen_width, screen_heigh))
 
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
@@ -25,15 +24,14 @@ targets = [[0, 0, 0, 0, 0, 0]]
 
 score = 0
 filein = open('bestplayers.txt', 'r')
-fileout = open('bestplayers.txt', 'w')
 
 
 def new_ball(i):
     balls[i][0] = randint(100, 700)
     balls[i][1] = randint(100, 500)
     balls[i][2] = randint(30, 50)
-    balls[i][3] = randint(1, 50)
-    balls[i][4] = randint(1, 50)
+    balls[i][3] = randint(1, 10)
+    balls[i][4] = randint(1, 10)
     balls[i][5] = COLORS[randint(0, 5)]
 
 
@@ -55,8 +53,8 @@ def new_target(i):
     targets[i][0] = randint(100, 700)
     targets[i][1] = randint(100, 500)
     targets[i][2] = randint(10, 20)
-    targets[i][3] = randint(30, 75)
-    targets[i][4] = randint(30, 75)
+    targets[i][3] = randint(10, 30)
+    targets[i][4] = randint(10, 30)
     targets[i][5] = COLORS[randint(0, 5)]
 
 
@@ -97,26 +95,33 @@ def click(event):
 
 def end_game():
     global filein
-    global fileout
     file = filein.readlines()
-    symbols = file[0].split()
+    print(file)
     if score >= 10:
         record = str(score) + ' ' + name
     else:
-        record = str(score) + '  ' + name
-    #max = 0
+        record = ' ' + str(score) + ' ' + name
+    symbols = file[0].split()
+    max = 0
+    max_i = len(file)
     if score > int(symbols[0]):
-        file.insert(0, record)
-    #else:
-    #    for i in range(len(file)):
-    #        symbols = file[i].split()
-    #        if int(symbols[0]) > max:
-    #            max = int(symbols[0])
-    #    file.insert(0, record)
+        file.insert(0, record + '\n')
+    else:
+        for i in range(len(file)):
+            symbols = file[i].split()
+            if score > int(symbols[0]) > max:
+                max = int(symbols[0])
+                max_i = i
+        file.insert(max_i, record + '\n')
+    fileout = open('bestplayers.txt', 'w')
+    for i in range(len(file)):
+        fileout.write(file[i])
 
 
 print('Enter your name:')
 name = input()
+
+screen = pygame.display.set_mode((screen_width, screen_heigh))
 
 pygame.display.update()
 clock = pygame.time.Clock()
@@ -132,7 +137,7 @@ while not finished:
     clock.tick(FPS)
     for event in pygame.event.get():
         if event.type == pygame.QUIT or score == 99:
-            #end_game()
+            end_game()
             finished = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
             click(event)
