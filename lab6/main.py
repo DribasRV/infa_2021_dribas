@@ -120,7 +120,7 @@ def click(event):
             if score > 99:
                 score = 99
             new_target(i)
-        elif ((event.pos[0] - targets[i][0]) ** 2 <= (targets[i][2] * 5) ** 2) or ((event.pos[1] - targets[i][1]) ** 2 <= (targets[i][2] * 5) ** 2):
+        elif ((event.pos[0] - targets[i][0]) ** 2 <= (targets[i][2] * 3) ** 2) or ((event.pos[1] - targets[i][1]) ** 2 <= (targets[i][2] * 3) ** 2):
             turn_target(i)
 
 
@@ -134,18 +134,36 @@ def end_game():
         record = str(score) + ' ' + name
     else:
         record = ' ' + str(score) + ' ' + name
-    symbols = file[0].split()
     max = 0
     max_i = len(file)
-    if score > int(symbols[0]):
-        file.insert(0, record + '\n')
-    else:
-        for i in range(len(file)):
-            symbols = file[i].split()
-            if score > int(symbols[0]) > max:
-                max = int(symbols[0])
-                max_i = i
-        file.insert(max_i, record + '\n')
+    name_used = False
+    for i in range(len(file)):
+        symbols = file[i].split(maxsplit=1)
+        if symbols[1] == name + '\n':
+            name_used = True
+            if score > int(symbols[0]):
+                del file[i]
+                symbols = file[0].split()
+                if score > int(symbols[0]):
+                    file.insert(0, record + '\n')
+                else:
+                    for i in range(len(file)):
+                        symbols = file[i].split()
+                        if score > int(symbols[0]) > max:
+                            max = int(symbols[0])
+                            max_i = i
+                    file.insert(max_i, record + '\n')
+    if name_used == False:
+        symbols = file[0].split()
+        if score > int(symbols[0]):
+            file.insert(0, record + '\n')
+        else:
+            for i in range(len(file)):
+                symbols = file[i].split()
+                if score > int(symbols[0]) > max:
+                    max = int(symbols[0])
+                    max_i = i
+            file.insert(max_i, record + '\n')
     fileout = open('bestplayers.txt', 'w')
     for i in range(len(file)):
         fileout.write(file[i])
