@@ -196,11 +196,14 @@ for i in range(len(targets)):
     draw_target(i)
 text_to_screen(screen, 'Score:' + str(score), 0, 0)
 finished = False
+soundtrack = pygame.mixer.Sound('soundtrack.mp3')
+soundtrack.play()
 
 while not finished:
     clock.tick(FPS)
     for event in pygame.event.get():
         if event.type == pygame.QUIT or score == 99:
+            soundtrack.stop()
             end_game()
             finished = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
