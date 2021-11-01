@@ -186,9 +186,9 @@ class Target:
         """ Инициализация новой цели. """
         self.refresh(screen)
 
-    def hit(self, points=1):
+    def hit(self, pts=1):
         """Попадание шарика в цель."""
-        self.points += points
+        pass
 
     def move(self):
         self.x += self.vx
@@ -215,10 +215,23 @@ class Target:
         )
 
 
+def display_points():
+    screen.blit(Font.render('Your points: ' + str(points), True, BLACK), (25, 25))
+
+
+def display_bullets():
+    screen.blit(Font.render('Targets killed for ' + str(bullets) + ' balls', True, BLACK), (25, 75))
+
+
 pygame.init()
+Font = pygame.font.SysFont('Comic Sans', 40)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-bullet = 0
 balls = []
+
+points = 0
+bullet = 0
+bullets = 0
+frames_with_bullets = 0
 
 clock = pygame.time.Clock()
 gun = Gun(screen)
@@ -236,6 +249,10 @@ while not finished:
             t.draw()
     for b in balls:
         b.draw()
+    display_points()
+    if frames_with_bullets != 0:
+        frames_with_bullets -= 1
+        display_bullets()
     pygame.display.update()
 
     clock.tick(FPS)
@@ -261,7 +278,11 @@ while not finished:
         if t.live == 1:
             hitted = False
     if hitted:
+        bullets = bullet
+        bullet = 0
+        points += 1
         balls = []
+        frames_with_bullets += 150
         for t in targets:
             t.refresh(screen)
 
