@@ -282,7 +282,7 @@ while not finished:
         bullet = 0
         points += 1
         balls = []
-        frames_with_bullets += 150
+        frames_with_bullets = 150
         for t in targets:
             t.refresh(screen)
 
