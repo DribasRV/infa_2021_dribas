@@ -4,7 +4,6 @@ from random import randint
 
 import pygame
 
-
 FPS = 30
 
 RED = 0xFF0000
@@ -13,7 +12,7 @@ YELLOW = 0xFFC91F
 GREEN = 0x00FF00
 MAGENTA = 0xFF03B8
 CYAN = 0x00FFCC
-BLACK = (0, 0, 0)
+BLACK = 0x000000
 WHITE = 0xFFFFFF
 GREY = 0x7D7D7D
 GAME_COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
@@ -46,9 +45,23 @@ class Ball:
         self.x и self.y с учетом скоростей self.vx и self.vy, силы гравитации, действующей на мяч,
         и стен по краям окна (размер окна 800х600).
         """
-        # FIXME
+        if self.x < 0:
+            self.vx *= -0.75
+            self.x = 0
+        elif self.x > WIDTH:
+            self.vx *= -0.75
+            self.x = WIDTH
+        if self.y < 0:
+            self.vy *= -0.75
+            self.vx *= 0.95
+            self.y = 0
+        elif self.y > HEIGHT:
+            self.vy *= -0.75
+            self.vx *= 0.95
+            self.y = HEIGHT
         self.x += self.vx
-        self.y -= self.vy
+        self.y += self.vy
+        self.vy += 1
 
     def draw(self):
         pygame.draw.circle(
@@ -97,9 +110,9 @@ class Gun:
         bullet += 1
         new_ball = Ball(self.screen)
         new_ball.r += 5
-        self.an = math.atan2((event.pos[1]-new_ball.y), (event.pos[0]-new_ball.x))
+        self.an = math.atan2((event.pos[1] - new_ball.y), (event.pos[0] - new_ball.x))
         new_ball.vx = self.f2_power * math.cos(self.an)
-        new_ball.vy = - self.f2_power * math.sin(self.an)
+        new_ball.vy = self.f2_power * math.sin(self.an)
         balls.append(new_ball)
         self.f2_on = 0
         self.f2_power = 10
@@ -107,19 +120,37 @@ class Gun:
     def targetting(self, event):
         """Прицеливание. Зависит от положения мыши."""
         if event:
-            self.an = math.atan((event.pos[1]-self.y) / (event.pos[0]-self.x)) * 180 / math.pi
+            self.an = math.atan2((self.y - event.pos[1]), (event.pos[0] - self.x))
         if self.f2_on:
             self.color = RED
         else:
             self.color = GREY
 
     def draw(self):
-        global screen
-        surf = pygame.Surface((self.width, self.height))
-        # pygame.draw.polygon(surf, self.color, ((0, 0), (self.width, 0), (self.width, self.height), (0, self.height)))
-        pygame.draw.ellipse(surf, self.color, (0, 0, self.width, self.height))
-        surf = pygame.transform.rotate(surf, -self.an)
-        screen.blit(surf, (self.x, self.y))
+        pygame.draw.polygon(self.screen, self.color,
+                            ((self.x + int(5 * math.cos(self.an + math.pi / 2)), self.y - int(5 * math.sin(self.an + math.pi / 2))),
+                             (self.x + int(5 * math.cos(self.an - math.pi / 2)), self.y - int(5 * math.sin(self.an - math.pi / 2))),
+                             (self.x + int(
+                                 (((30 + self.f2_power / 2) * (30 + self.f2_power / 2) + 5 * 5) ** 0.5) * math.cos(
+                                     self.an - 5 / (30 + self.f2_power / 2))),
+                              self.y - int(
+                                 (((30 + self.f2_power / 2) * (30 + self.f2_power / 2) + 5 * 5) ** 0.5) * math.sin(
+                                     self.an - 5 / (30 + self.f2_power / 2)))),
+                             (self.x + int(
+                                 (((30 + self.f2_power / 2) * (30 + self.f2_power / 2) + 5 * 5)) ** 0.5) * math.cos(
+                                     self.an + 5 / (30 + self.f2_power / 2)),
+                              self.y - int(
+                                 (((30 + self.f2_power / 2) * (30 + self.f2_power / 2) + 5 * 5) ** 0.5) * math.sin(
+                                     self.an + 5 / (30 + self.f2_power / 2))))))
+
+    # def draw1(self):
+    #    global screen
+    #    surf = pygame.Surface((self.width, self.height))
+    #    surf.fill((255, 255, 255))
+    #    pygame.draw.polygon(surf, self.color, ((0, 0), (self.width, 0), (self.width, self.height), (0, self.height)))
+    #    # pygame.draw.ellipse(surf, WHITE, (0, 0, self.width, self.height))
+    #    surf = pygame.transform.rotate(surf, self.an * 180 / math.pi)
+    #    screen.blit(surf, (self.x, self.y + ((self.width ** 2 + self.height ** 2) ** 0.5) * math.cos(self.an)))
 
     def power_up(self):
         if self.f2_on:
