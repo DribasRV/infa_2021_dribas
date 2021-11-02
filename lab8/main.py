@@ -86,6 +86,9 @@ class Ball:
 
 
 class Gun:
+    vx = 0
+    vy = 0
+
     def __init__(self, screen):
         self.screen = screen
         self.f2_power = 10
@@ -108,7 +111,7 @@ class Gun:
         """
         global balls, bullet
         bullet += 1
-        new_ball = Ball(self.screen)
+        new_ball = Ball(self.screen, self.x, self.y)
         new_ball.r += 5
         self.an = math.atan2((event.pos[1] - new_ball.y), (event.pos[0] - new_ball.x))
         new_ball.vx = self.f2_power * math.cos(self.an)
@@ -125,6 +128,18 @@ class Gun:
             self.color = RED
         else:
             self.color = GREY
+
+    def move(self):
+        self.x += self.vx
+        self.y += self.vy
+        if self.x < 0:
+            self.x = 0
+        elif self.x > WIDTH:
+            self.x = WIDTH
+        if self.y < 0:
+            self.y = 0
+        elif self.y > HEIGHT:
+            self.y = HEIGHT
 
     def draw(self):
         pygame.draw.polygon(self.screen, self.color,
@@ -256,6 +271,7 @@ while not finished:
     pygame.display.update()
 
     clock.tick(FPS)
+    moved = False
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
@@ -265,6 +281,24 @@ while not finished:
             gun.fire2_end(event)
         elif event.type == pygame.MOUSEMOTION:
             gun.targetting(event)
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_w:
+                gun.vy = -5
+            elif event.key == pygame.K_s:
+                gun.vy = 5
+            elif event.key == pygame.K_a:
+                gun.vx = -5
+            elif event.key == pygame.K_d:
+                gun.vx = 5
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_w:
+                gun.vy = 0
+            elif event.key == pygame.K_s:
+                gun.vy = 0
+            elif event.key == pygame.K_a:
+                gun.vx = 0
+            elif event.key == pygame.K_d:
+                gun.vx = 0
 
     for b in balls:
         b.move()
@@ -289,6 +323,7 @@ while not finished:
     for t in targets:
         t.move()
 
+    gun.move()
     gun.power_up()
 
 pygame.quit()
