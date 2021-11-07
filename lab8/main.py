@@ -98,7 +98,8 @@ class Gun:
         self.x = 20
         self.y = 450
         self.width = 40
-        self.height = 10
+        self.height = 100
+        self.picture = slippers[0]
 
     def fire2_start(self, event):
         self.f2_on = 1
@@ -125,9 +126,9 @@ class Gun:
         if event:
             self.an = math.atan2((self.y - event.pos[1]), (event.pos[0] - self.x))
         if self.f2_on:
-            self.color = RED
+            self.picture = slippers[1]
         else:
-            self.color = GREY
+            self.picture = slippers[0]
 
     def move(self):
         self.x += self.vx
@@ -142,30 +143,9 @@ class Gun:
             self.y = HEIGHT
 
     def draw(self):
-        pygame.draw.polygon(self.screen, self.color,
-                            ((self.x + int(5 * math.cos(self.an + math.pi / 2)), self.y - int(5 * math.sin(self.an + math.pi / 2))),
-                             (self.x + int(5 * math.cos(self.an - math.pi / 2)), self.y - int(5 * math.sin(self.an - math.pi / 2))),
-                             (self.x + int(
-                                 (((30 + self.f2_power / 2) * (30 + self.f2_power / 2) + 5 * 5) ** 0.5) * math.cos(
-                                     self.an - 5 / (30 + self.f2_power / 2))),
-                              self.y - int(
-                                 (((30 + self.f2_power / 2) * (30 + self.f2_power / 2) + 5 * 5) ** 0.5) * math.sin(
-                                     self.an - 5 / (30 + self.f2_power / 2)))),
-                             (self.x + int(
-                                 (((30 + self.f2_power / 2) * (30 + self.f2_power / 2) + 5 * 5)) ** 0.5) * math.cos(
-                                     self.an + 5 / (30 + self.f2_power / 2)),
-                              self.y - int(
-                                 (((30 + self.f2_power / 2) * (30 + self.f2_power / 2) + 5 * 5) ** 0.5) * math.sin(
-                                     self.an + 5 / (30 + self.f2_power / 2))))))
-
-    # def draw1(self):
-    #    global screen
-    #    surf = pygame.Surface((self.width, self.height))
-    #    surf.fill((255, 255, 255))
-    #    pygame.draw.polygon(surf, self.color, ((0, 0), (self.width, 0), (self.width, self.height), (0, self.height)))
-    #    # pygame.draw.ellipse(surf, WHITE, (0, 0, self.width, self.height))
-    #    surf = pygame.transform.rotate(surf, self.an * 180 / math.pi)
-    #    screen.blit(surf, (self.x, self.y + ((self.width ** 2 + self.height ** 2) ** 0.5) * math.cos(self.an)))
+        slipper = pygame.transform.scale(self.picture, (int(self.width + 2 * self.f2_power), self.height))
+        slipper = pygame.transform.rotate(slipper, self.an * 180 / math.pi)
+        screen.blit(slipper, (self.x, self.y - ((self.width ** 2 + self.height ** 2) ** 0.5) * math.sin(self.an)))
 
     def power_up(self):
         if self.f2_on:
@@ -196,6 +176,7 @@ class Target:
         self.vy = randint(-5, 5)
         self.r = randint(2, 50)
         self.color = RED
+        self.picture = choice(cockroaches)
 
     def __init__(self, screen):
         """ Инициализация новой цели. """
@@ -222,12 +203,8 @@ class Target:
             self.y = HEIGHT
 
     def draw(self):
-        pygame.draw.circle(
-            self.screen,
-            self.color,
-            (self.x, self.y),
-            self.r
-        )
+        cockroach = pygame.transform.scale(self.picture, (int(2 * self.r), int(2 * self.r)))
+        screen.blit(cockroach, (int(self.x - self.r), int(self.y - self.r)))
 
 
 def display_points():
@@ -243,6 +220,9 @@ Font = pygame.font.SysFont('Comic Sans', 40)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 balls = []
 
+cockroaches = [pygame.image.load('files/pictures/cockroach_1.png'), pygame.image.load('files/pictures/cockroach_2.png')]
+slippers = [pygame.image.load('files/pictures/slipper_normal.png'), pygame.image.load('files/pictures/slipper_red.png')]
+
 points = 0
 bullet = 0
 bullets = 0
@@ -250,10 +230,8 @@ frames_with_bullets = 0
 
 clock = pygame.time.Clock()
 gun = Gun(screen)
-targets = []
-targets_number = 2
-for _ in range(targets_number):
-    targets.append(Target(screen))
+number_of_targets = 2
+targets = [Target(screen) for i in range(number_of_targets)]
 finished = False
 
 while not finished:
